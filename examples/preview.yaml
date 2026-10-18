@@ -1,0 +1,48 @@
+# YAML keys, strings, booleans, aliases, tags, and block scalars.
+name: zed
+version: "1.0.0"
+enabled: true
+fallback: null
+threshold: 40
+values:
+  - 21
+  - 21
+expected: "zed:42:ready"
+
+styles: &default_styles
+  bold: true
+  italic: false
+  opacity: 1.0
+
+palette:
+  keyword: "#ca9ee6"
+  function: "#8fbfff"
+  type: "#e5c890"
+  field: "#90d4e8"
+  string: "#a6d189"
+  comment: "#a5adce"
+
+scopes:
+  - name: declaration
+    style: *default_styles
+  - name: comment
+    style:
+      bold: false
+      italic: true
+
+escaped: "tab\tline\n\"quoted\""
+literal: |
+  ${name} is literal text here.
+  Backslashes stay: \w+\s*
+folded: >-
+  This folded text exercises
+  a second scalar style.
+
+metadata:
+  owner: "theme-fixture"
+  quoted_boolean: "false"
+  release_date: "2026-01-01"
+  labels: [local, reproducible]
+  offset: -3
+  scientific: 1.25e+2
+  unicode: "λ → ☀"

@@ -1,0 +1,46 @@
+# TOML tables, dotted keys, strings, dates, arrays, and inline tables.
+name = "zed"
+version = "1.0.0"
+enabled = true
+threshold = 40
+values = [21, 21]
+expected = "zed:42:ready"
+escaped = "tab\tline\n\"quoted\""
+literal = '\w+\s*'
+integer = 1_000
+negative = -3
+scientific = 1.25e2
+release_date = 2026-01-01
+
+[palette]
+keyword = "#ca9ee6"
+function = "#8fbfff"
+type = "#e5c890"
+field = "#90d4e8"
+string = "#a6d189"
+comment = "#a5adce"
+
+[styles.declaration]
+bold = true
+italic = false
+
+[styles.comment]
+bold = false
+italic = true
+
+[metadata]
+owner = "theme-fixture"
+labels = ["local", "reproducible"]
+options = { opacity = 1.0, inherit = false }
+note = """
+Multiline string:
+${name} remains literal TOML data.
+"""
+
+[[scopes]]
+name = "function"
+style = "declaration"
+
+[[scopes]]
+name = "comment"
+style = "comment"

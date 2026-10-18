@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="prism-banner-title prism-banner-description">
+  <title id="prism-banner-title">Catppuccin Frappé Prism — palette guide</title>
+  <desc id="prism-banner-description">An authored palette guide for the Zed theme: coral declarations, blue calls, cream types, lavender parameters, sky members, and dark text on green selection. An abstract faceted prism accompanies the title. This illustration is not an editor screenshot.</desc>
+
+  <rect width="1200" height="440" rx="24" fill="#303446"/>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif">
+    <text x="64" y="76" fill="#b5bfe2" font-size="16" font-weight="500" letter-spacing="3">CATPPUCCIN FRAPPÉ</text>
+    <text x="60" y="180" fill="#c6d0f5" font-size="92" font-weight="600" letter-spacing="-3">Prism</text>
+    <text x="64" y="232" fill="#b5bfe2" font-size="24">A palette guide for Zed.</text>
+  </g>
+
+  <g aria-hidden="true" stroke-linejoin="round">
+    <path d="M952 48 796 248 952 184Z" fill="#8caaee" fill-opacity="0.10"/>
+    <path d="M952 48 1108 248 952 184Z" fill="#c6aff5" fill-opacity="0.10"/>
+    <path d="M796 248 1108 248 952 184Z" fill="#91c9ed" fill-opacity="0.08"/>
+    <path d="M952 48 796 248" fill="none" stroke="#8caaee" stroke-width="2"/>
+    <path d="M952 48 1108 248" fill="none" stroke="#c6aff5" stroke-width="2"/>
+    <path d="M796 248 1108 248" fill="none" stroke="#91c9ed" stroke-width="2"/>
+    <path d="M952 48 952 184 796 248M952 184 1108 248" fill="none" stroke="#b5bfe2" stroke-width="1" stroke-opacity="0.35"/>
+    <circle cx="952" cy="48" r="4" fill="#f1949c"/>
+    <circle cx="796" cy="248" r="4" fill="#8caaee"/>
+    <circle cx="1108" cy="248" r="4" fill="#c6aff5"/>
+  </g>
+
+  <path d="M64 296H1136" stroke="#414559" stroke-width="1"/>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="14" font-weight="500" letter-spacing="1.5" fill="#b5bfe2">
+    <text x="64" y="332">DECLARATION</text>
+    <text x="244" y="332">CALL</text>
+    <text x="424" y="332">TYPE</text>
+    <text x="604" y="332">PARAMETER</text>
+    <text x="784" y="332">MEMBER</text>
+    <text x="964" y="332">SELECTION</text>
+  </g>
+
+  <g font-family="'SFMono-Regular', Consolas, 'Liberation Mono', monospace" font-size="24">
+    <text x="64" y="376" fill="#f1949c" font-weight="700">build</text>
+    <text x="244" y="376" fill="#8caaee">build()</text>
+    <text x="424" y="376" fill="#e5c890" font-style="italic">Sample</text>
+    <text x="604" y="376" fill="#c6aff5" font-style="italic">value</text>
+    <text x="784" y="376" fill="#91c9ed">name</text>
+  </g>
+  <rect x="952" y="348" width="156" height="40" rx="4" fill="#9ad99e"/>
+  <text x="964" y="376" fill="#232634" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', monospace" font-size="24">selected</text>
+</svg>

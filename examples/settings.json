@@ -1,0 +1,260 @@
+{
+  "theme": {
+    "mode": "dark",
+    "dark": "Catppuccin Frappé Prism",
+    "light": "Catppuccin Latte"
+  },
+  "semantic_tokens": "combined",
+  "minimum_contrast_for_highlights": 75,
+  "selection_highlight": false,
+  "global_lsp_settings": {
+    "semantic_token_rules": [
+      {
+        "token_type": "class",
+        "token_modifiers": [
+          "constructorOrDestructor",
+          "declaration"
+        ],
+        "style": [
+          "constructor.definition",
+          "constructor"
+        ],
+        "font_weight": "bold",
+        "font_style": "italic"
+      },
+      {
+        "token_modifiers": [
+          "constructor",
+          "declaration"
+        ],
+        "style": [
+          "constructor.definition"
+        ],
+        "font_weight": "bold",
+        "font_style": "italic"
+      },
+      {
+        "token_modifiers": [
+          "constructor"
+        ],
+        "style": [
+          "constructor"
+        ]
+      },
+      {
+        "token_type": "function",
+        "token_modifiers": [
+          "declaration"
+        ],
+        "style": [
+          "function.definition",
+          "function"
+        ],
+        "font_weight": "bold"
+      },
+      {
+        "token_type": "function",
+        "token_modifiers": [
+          "definition"
+        ],
+        "style": [
+          "function.definition",
+          "function"
+        ],
+        "font_weight": "bold"
+      },
+      {
+        "token_type": "method",
+        "token_modifiers": [
+          "declaration"
+        ],
+        "style": [
+          "function.method.definition",
+          "function.method"
+        ],
+        "font_weight": "bold"
+      },
+      {
+        "token_type": "method",
+        "token_modifiers": [
+          "definition"
+        ],
+        "style": [
+          "function.method.definition",
+          "function.method"
+        ],
+        "font_weight": "bold"
+      },
+      {
+        "token_type": "function",
+        "token_modifiers": [
+          "defaultLibrary"
+        ],
+        "style": [
+          "function.builtin"
+        ],
+        "font_style": "italic"
+      },
+      {
+        "token_type": "function",
+        "style": [
+          "function.call",
+          "function"
+        ]
+      },
+      {
+        "token_type": "method",
+        "style": [
+          "function.method.call",
+          "function.method"
+        ]
+      },
+      {
+        "token_type": "parameter",
+        "style": [
+          "variable.parameter"
+        ]
+      },
+      {
+        "token_type": "property",
+        "style": [
+          "variable.member"
+        ]
+      },
+      {
+        "token_type": "variable",
+        "token_modifiers": [
+          "readonly"
+        ],
+        "style": [
+          "constant"
+        ]
+      },
+      {
+        "token_type": "variable",
+        "token_modifiers": [
+          "constant"
+        ],
+        "style": [
+          "constant"
+        ]
+      },
+      {
+        "token_type": "variable",
+        "token_modifiers": [
+          "static"
+        ],
+        "style": [
+          "variable.static"
+        ]
+      },
+      {
+        "token_type": "variable",
+        "style": [
+          "variable"
+        ]
+      },
+      {
+        "token_type": "namespace",
+        "style": [
+          "namespace"
+        ]
+      },
+      {
+        "token_type": "type",
+        "token_modifiers": [
+          "interface"
+        ],
+        "style": [
+          "type.interface",
+          "type"
+        ]
+      },
+      {
+        "token_type": "type",
+        "token_modifiers": [
+          "struct"
+        ],
+        "style": [
+          "type.struct",
+          "type"
+        ]
+      },
+      {
+        "token_type": "type",
+        "token_modifiers": [
+          "defaultLibrary"
+        ],
+        "style": [
+          "type.builtin"
+        ]
+      },
+      {
+        "token_type": "struct",
+        "style": [
+          "type.struct",
+          "type"
+        ]
+      },
+      {
+        "token_type": "interface",
+        "style": [
+          "type.interface",
+          "type"
+        ]
+      },
+      {
+        "token_type": "enum",
+        "style": [
+          "enum",
+          "type"
+        ]
+      },
+      {
+        "token_type": "enumMember",
+        "style": [
+          "variant",
+          "constant"
+        ]
+      },
+      {
+        "token_type": "typeParameter",
+        "style": [
+          "type.parameter",
+          "type"
+        ]
+      },
+      {
+        "token_type": "macro",
+        "style": [
+          "function.macro"
+        ]
+      },
+      {
+        "token_type": "decorator",
+        "style": [
+          "function.decorator"
+        ]
+      },
+      {
+        "token_type": "keyword",
+        "style": [
+          "keyword"
+        ]
+      },
+      {
+        "token_type": "operator",
+        "style": [
+          "operator"
+        ]
+      }
+    ]
+  },
+  "lsp": {
+    "gopls": {
+      "initialization_options": {
+        "semanticTokens": true
+      }
+    }
+  }
+}
