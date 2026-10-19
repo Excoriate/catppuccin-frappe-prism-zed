@@ -4,6 +4,7 @@ import importlib.util
 import json
 import shutil
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -72,10 +73,11 @@ class PackageControls(unittest.TestCase):
     def test_manifest_identity_version_and_missing_field_drift(self):
         path = self.root / "extension.toml"
         original = path.read_text(encoding="utf-8")
+        version = tomllib.loads(original)["version"]
         for before, after, diagnostic in (
             ('id = "catppuccin-frappe-prism-theme"', 'id = "another-theme"', "extension id drift"),
-            ('version = "0.1.0"', 'version = "v0.1.0"', "version must be plain"),
-            ('version = "0.1.0"', 'version = "00.1.0"', "version must be plain"),
+            (f'version = "{version}"', f'version = "v{version}"', "version must be plain"),
+            (f'version = "{version}"', f'version = "0{version}"', "version must be plain"),
             ('schema_version = 1', 'schema_version = true', "schema_version must be integer"),
             ('authors = ["Alex Torres Ruiz"]', '', "exactly seven standard fields"),
             (CHECK.REPOSITORY, 'https://github.com/example/wrong-theme', "repository URL drift"),
@@ -109,11 +111,124 @@ class PackageControls(unittest.TestCase):
         (self.root / CHECK.THEME_PATH).rename(self.root / "theme.json")
         self.reject("missing regular file")
 
-    def test_read_write_interaction_cannot_drift_or_stop_being_green(self):
-        self.edit_theme(lambda t: t["style"].update({"editor.document_highlight.write_background": "#a6d189"}))
+    def test_primary_selection_keeps_its_own_green(self):
+        self.edit_theme(lambda t: t["style"]["players"][0].update(selection="#a6d189"))
+        self.reject("primary selection must remain #9ad99e")
+
+    def test_read_write_occurrence_backgrounds_must_match(self):
+        self.edit_theme(lambda t: t["style"].update({"editor.document_highlight.write_background": "#ca9ee6"}))
         self.reject("read/write highlight backgrounds must match")
-        self.edit_theme(lambda t: t["style"].update({"editor.document_highlight.write_background": "#e78284"}))
-        self.reject("write highlight: expected a green background")
+
+    def test_occurrences_keep_opaque_lavender_distinct_from_primary_selection(self):
+        path = self.root / CHECK.THEME_PATH
+        original = path.read_text(encoding="utf-8")
+        for value, diagnostic in (
+            ("#9ad99e", "document highlights must differ from primary selection"),
+            ("#86c58c", "document highlights must use Frappé lavender #babbf1"),
+            ("#85c1dc", "document highlights must use Frappé lavender #babbf1"),
+            ("#babbf180", "read highlight: expected opaque #RRGGBB"),
+        ):
+            with self.subTest(value=value):
+                path.write_text(original, encoding="utf-8")
+                self.edit_theme(lambda t: t["style"].update({
+                    "editor.document_highlight.read_background": value,
+                    "editor.document_highlight.write_background": value,
+                }))
+                self.reject(diagnostic)
+
+    def test_occurrences_cannot_merge_with_either_search_background(self):
+        path = self.root / CHECK.THEME_PATH
+        original = path.read_text(encoding="utf-8")
+        for key in ("search.match_background", "search.active_match_background"):
+            with self.subTest(key=key):
+                path.write_text(original, encoding="utf-8")
+                self.edit_theme(lambda t: t["style"].update({
+                    "editor.document_highlight.read_background": "#babbf1",
+                    "editor.document_highlight.write_background": "#babbf1",
+                    key: "#babbf14d",
+                }))
+                self.reject("document highlights must differ from search backgrounds")
+
+    def test_every_supported_terminal_color_is_required(self):
+        keys = ["terminal.background", "terminal.ansi.background", "terminal.foreground",
+                "terminal.bright_foreground", "terminal.dim_foreground"]
+        keys.extend(f"terminal.ansi.{prefix}{name}"
+                    for prefix in ("", "bright_", "dim_")
+                    for name in ("black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"))
+        path = self.root / CHECK.THEME_PATH
+        original = path.read_text(encoding="utf-8")
+        for key in keys:
+            with self.subTest(key=key):
+                path.write_text(original, encoding="utf-8")
+                self.edit_theme(lambda t: t["style"].pop(key))
+                self.reject(f"terminal palette missing required key: {key}")
+
+    def test_terminal_colors_are_valid_opaque_hex_and_supported_keys(self):
+        path = self.root / CHECK.THEME_PATH
+        original = path.read_text(encoding="utf-8")
+        for edit, diagnostic in (
+            ({"terminal.ansi.green": "#zzzzzz"}, "terminal.ansi.green: expected #RRGGBB"),
+            ({"terminal.ansi.green": "#39ff8880"}, "terminal.ansi.green: expected opaque #RRGGBB"),
+            ({"terminal.cursor": "#39ff88"}, "terminal palette contains unsupported color keys"),
+        ):
+            with self.subTest(edit=edit):
+                path.write_text(original, encoding="utf-8")
+                self.edit_theme(lambda t: t["style"].update(edit))
+                self.reject(diagnostic)
+
+    def test_terminal_backgrounds_match_the_retro_palette(self):
+        self.edit_theme(lambda t: t["style"].update({"terminal.ansi.background": "#090d15"}))
+        self.reject("terminal and ANSI backgrounds must match")
+        self.edit_theme(lambda t: t["style"].update({
+            "terminal.background": "#303446", "terminal.ansi.background": "#303446",
+        }))
+        self.reject("terminal background must remain #080c14")
+
+    def test_terminal_keeps_neon_green_and_visible_default_and_black_text(self):
+        path = self.root / CHECK.THEME_PATH
+        original = path.read_text(encoding="utf-8")
+        for key, value, diagnostic in (
+            ("terminal.ansi.green", "#a6d189", "terminal ANSI green must remain #33e890"),
+            ("terminal.foreground", "#a6d189", "terminal foreground must remain neon green #39ff88"),
+            ("terminal.foreground", "#080c14", "terminal.foreground: contrast 1.00:1 is below 4.5:1"),
+            ("terminal.ansi.black", "#080c14", "terminal.ansi.black: contrast 1.00:1 is below 4.5:1"),
+        ):
+            with self.subTest(key=key):
+                path.write_text(original, encoding="utf-8")
+                self.edit_theme(lambda t: t["style"].update({key: value}))
+                self.reject(diagnostic)
+
+    def test_dim_compositing_uses_the_terminal_background_and_native_opacity(self):
+        self.assertEqual(CHECK.composite("#c8c8c8", "#646464", 0.7), "#aaaaaa")
+        self.assertEqual(CHECK.composite("#c8c8c8", "#646464", 0), "#646464")
+        self.assertEqual(CHECK.composite("#c8c8c8", "#646464", 1), "#c8c8c8")
+        for key in ("terminal.dim_foreground", "terminal.ansi.dim_black", "terminal.ansi.dim_red"):
+            with self.subTest(key=key):
+                self.edit_theme(lambda t: t["style"].update({key: "#70809d"}))
+                self.reject(f"{key}: composited dim contrast .* is below 4.5:1")
+                shutil.copyfile(ROOT / CHECK.THEME_PATH, self.root / CHECK.THEME_PATH)
+
+    def test_terminal_ansi_palettes_cannot_flatten_or_reverse_brightness(self):
+        path = self.root / CHECK.THEME_PATH
+        original = path.read_text(encoding="utf-8")
+        for prefix in ("", "bright_", "dim_"):
+            with self.subTest(prefix=prefix):
+                path.write_text(original, encoding="utf-8")
+                self.edit_theme(lambda t: t["style"].update({
+                    f"terminal.ansi.{prefix}{name}": "#dce3fa"
+                    for name in ("black", "red", "green", "yellow", "blue", "magenta", "cyan", "white")
+                }))
+                self.reject("ANSI colors must remain distinct")
+        path.write_text(original, encoding="utf-8")
+        self.edit_theme(lambda t: t["style"].update({
+            "terminal.ansi.bright_red": t["style"]["terminal.ansi.red"],
+        }))
+        self.reject("terminal ANSI red: normal, bright and effective dim must differ")
+        path.write_text(original, encoding="utf-8")
+        self.edit_theme(lambda t: t["style"].update({
+            "terminal.ansi.bright_red": "#dd4569",
+        }))
+        self.reject("terminal ANSI red: expected effective dim < normal < bright luminance")
 
     def test_upstream_copyright_notice_is_retained(self):
         path = self.root / "themes/LICENSE.catppuccin"

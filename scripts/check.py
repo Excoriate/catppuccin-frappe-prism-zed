@@ -120,6 +120,13 @@ def luminance(value):
     return sum(c * weight for c, weight in zip(linear, (0.2126, 0.7152, 0.0722)))
 
 
+def composite(foreground, background, opacity):
+    """Composite opaque sRGB colors before measuring the rendered glyph contrast."""
+    channels = [round(int(foreground[i:i + 2], 16) * opacity +
+                      int(background[i:i + 2], 16) * (1 - opacity)) for i in (1, 3, 5)]
+    return "#" + "".join(f"{channel:02x}" for channel in channels)
+
+
 def green(value, label):
     value = color(value, label, opaque=True)
     red, channel_green, blue = (int(value[i:i + 2], 16) for i in (1, 3, 5))
@@ -267,10 +274,55 @@ def validate_repository(root):
         require(isinstance(player, dict), f"player {index}: expected an object")
         for key in ("cursor", "selection", "background"):
             color(player.get(key), f"player {index} {key}")
-    green(players[0]["selection"], "primary selection")
-    read = green(style.get("editor.document_highlight.read_background"), "read highlight")
-    write = green(style.get("editor.document_highlight.write_background"), "write highlight")
+    selection = green(players[0]["selection"], "primary selection")
+    require(selection == "#9ad99e", "primary selection must remain #9ad99e")
+    read = color(style.get("editor.document_highlight.read_background"), "read highlight", opaque=True)
+    write = color(style.get("editor.document_highlight.write_background"), "write highlight", opaque=True)
     require(read == write, "read/write highlight backgrounds must match")
+    require(read != selection, "document highlights must differ from primary selection")
+    for key in ("search.match_background", "search.active_match_background"):
+        require(read != color(style.get(key), key)[:7],
+                "document highlights must differ from search backgrounds")
+    require(read == "#babbf1", "document highlights must use Frappé lavender #babbf1")
+
+    ansi_names = ("black", "red", "green", "yellow", "blue", "magenta", "cyan", "white")
+    terminal_keys = ["terminal.background", "terminal.ansi.background", "terminal.foreground",
+                     "terminal.bright_foreground", "terminal.dim_foreground"]
+    terminal_keys.extend(f"terminal.ansi.{prefix}{name}"
+                         for prefix in ("", "bright_", "dim_") for name in ansi_names)
+    for key in terminal_keys:
+        require(key in style, f"terminal palette missing required key: {key}")
+    require({key for key in style if key.startswith("terminal.")} == set(terminal_keys),
+            "terminal palette contains unsupported color keys")
+    terminal = {key: color(style[key], key, opaque=True) for key in terminal_keys}
+    background = terminal["terminal.background"]
+    require(background == terminal["terminal.ansi.background"], "terminal and ANSI backgrounds must match")
+    require(background == "#080c14", "terminal background must remain #080c14")
+    for prefix in ("", "bright_", "dim_"):
+        require(len({terminal[f"terminal.ansi.{prefix}{name}"] for name in ansi_names}) == len(ansi_names),
+                f"terminal {prefix or 'normal'} ANSI colors must remain distinct")
+    require(terminal["terminal.ansi.green"] == "#33e890", "terminal ANSI green must remain #33e890")
+    terminal_background = luminance(background)
+    terminal_ratios = []
+    for key, value in terminal.items():
+        if key.endswith("background"):
+            continue
+        is_dim = key == "terminal.dim_foreground" or key.startswith("terminal.ansi.dim_")
+        # Zed v1.24.2 multiplies dim glyph alpha by 0.7 after foreground contrast handling.
+        foreground = luminance(composite(value, background, 0.7) if is_dim else value)
+        ratio = (max(foreground, terminal_background) + 0.05) / (min(foreground, terminal_background) + 0.05)
+        terminal_ratios.append(ratio)
+        label = "composited dim contrast" if is_dim else "contrast"
+        require(ratio >= 4.5, f"{key}: {label} {ratio:.2f}:1 is below 4.5:1")
+    require(terminal["terminal.foreground"] == "#39ff88", "terminal foreground must remain neon green #39ff88")
+    for name in ansi_names:
+        normal = terminal[f"terminal.ansi.{name}"]
+        bright = terminal[f"terminal.ansi.bright_{name}"]
+        dim = composite(terminal[f"terminal.ansi.dim_{name}"], background, 0.7)
+        require(len({normal, bright, dim}) == 3,
+                f"terminal ANSI {name}: normal, bright and effective dim must differ")
+        require(luminance(dim) < luminance(normal) < luminance(bright),
+                f"terminal ANSI {name}: expected effective dim < normal < bright luminance")
 
     syntax = style.get("syntax")
     require(isinstance(syntax, dict) and syntax, "syntax must be a nonempty object")
@@ -304,7 +356,8 @@ def validate_repository(root):
     rule_count = validate_settings(root, syntax)
     return {"scopes": len(syntax), "colors": len({s["color"].lower() for s in syntax.values()}),
             "minimum_contrast": min(ratios), "role_pairs": len(ROLE_PAIRS),
-            "minimum_role_distance": min(distances), "semantic_rules": rule_count}
+            "minimum_role_distance": min(distances), "semantic_rules": rule_count,
+            "terminal_colors": len(terminal), "minimum_terminal_contrast": min(terminal_ratios)}
 
 
 def main():
@@ -317,6 +370,8 @@ def main():
           f"minimum contrast {result['minimum_contrast']:.2f}:1, {result['role_pairs']} role pairs")
     print(f"Protected-pair minimum sRGB distance: {result['minimum_role_distance']:.2f} (floor {MIN_ROLE_DISTANCE}); "
           f"optional profile: {result['semantic_rules']} semantic rules")
+    print(f"Terminal: {result['terminal_colors']} colors, minimum normal/bright/rendered-dim contrast "
+          f"{result['minimum_terminal_contrast']:.2f}:1; lavender document highlights distinct from green selection")
     suite = unittest.defaultTestLoader.discover(str(ROOT / "tests"), pattern="test_check.py")
     require(suite.countTestCases() > 0, "regression controls are missing")
     tests = unittest.TextTestRunner(stream=sys.stdout, verbosity=1).run(suite)

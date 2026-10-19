@@ -12,7 +12,7 @@ From the repository root, run:
 python3 scripts/check.py
 ```
 
-This is the same command used by CI. It checks the manifest, discoverable theme, retained licenses, color syntax, syntax contrast against normal and active-line backgrounds, deliberate role distinctions, declaration typography, and the green read/write interaction. It also runs negative controls that must reject malformed or regressed packages. It does not modify your working tree.
+This is the same command used by CI. It checks the manifest, discoverable theme, retained licenses, color syntax, syntax contrast against normal and active-line backgrounds, deliberate role distinctions, declaration typography, lavender read/write occurrences, green selection, and terminal colors. It also runs negative controls that must reject malformed or regressed packages. It does not modify your working tree.
 
 The checker intentionally protects reading behavior rather than a frozen palette checksum. If a deliberate design change alters a role contract, update its check and control together, and explain the reading task the new contract improves. Do not remove a failing contract merely to make CI green.
 
@@ -22,6 +22,7 @@ The checker intentionally protects reading behavior rather than a frozen palette
 2. Select this repository's root, which contains `extension.toml`.
 3. Run **theme selector: toggle** and choose **Catppuccin Frappé Prism**. Reload Zed if a copied theme or extension change has not appeared.
 4. Inspect the affected code at your normal font size, including the active line, selection, and read/write occurrence highlights.
+5. In Zed's terminal, run `sh examples/terminal-preview.sh`. Compare plain text, normal, bright and dim ANSI colors, and text on black backgrounds. Check inverse and selected text, too.
 
 For visual changes, include before and after screenshots of the same code, font, Zed version, and settings. Use a short example without secrets. Check at least one ordinary language as well as the language motivating the change, so a stronger distinction does not hide another role.
 
@@ -49,7 +50,7 @@ as a dev extension in Zed, and run the checks above. In a fork of
 ```toml
 [catppuccin-frappe-prism-theme]
 submodule = "extensions/catppuccin-frappe-prism-theme"
-version = "0.1.0"
+version = "0.2.0"
 ```
 
 Keep the registry version equal to this repository's `extension.toml`, pin the
