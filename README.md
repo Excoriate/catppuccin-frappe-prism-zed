@@ -21,6 +21,7 @@ guide; this is the unedited native capture.*
 
 This theme is available from source. It is **not yet listed in Zed's extension
 catalogue**. Zed is the only prerequisite for using the theme.
+The commands below install **v0.2.0**. See [CHANGELOG.md](CHANGELOG.md) for its changes.
 
 <details open>
 <summary>macOS or Linux</summary>
@@ -35,7 +36,7 @@ Run this in any terminal directory:
   theme_tmp=$(mktemp "$theme_dir/.frappe-prism.XXXXXX")
   trap '[ ! -f "$theme_tmp" ] || rm "$theme_tmp"' EXIT HUP INT TERM
   curl --fail --location \
-    https://raw.githubusercontent.com/Excoriate/catppuccin-frappe-prism-zed/main/themes/catppuccin-frappe-prism.json \
+    https://raw.githubusercontent.com/Excoriate/catppuccin-frappe-prism-zed/v0.2.0/themes/catppuccin-frappe-prism.json \
     --output "$theme_tmp"
   mv "$theme_tmp" "$theme_dir/catppuccin-frappe-prism.json"
 )
@@ -55,7 +56,7 @@ New-Item -ItemType Directory -Path $themeDir -Force -ErrorAction Stop | Out-Null
 $themeTmp = Join-Path $themeDir ([IO.Path]::GetRandomFileName())
 try {
     Invoke-WebRequest -ErrorAction Stop `
-      -Uri 'https://raw.githubusercontent.com/Excoriate/catppuccin-frappe-prism-zed/main/themes/catppuccin-frappe-prism.json' `
+      -Uri 'https://raw.githubusercontent.com/Excoriate/catppuccin-frappe-prism-zed/v0.2.0/themes/catppuccin-frappe-prism.json' `
       -OutFile $themeTmp
     Move-Item -LiteralPath $themeTmp `
       -Destination (Join-Path $themeDir 'catppuccin-frappe-prism.json') -Force -ErrorAction Stop
@@ -69,14 +70,14 @@ try {
 In Zed, open the command palette (`Cmd+Shift+P` on macOS; `Ctrl+Shift+P` on
 Linux/Windows), run **theme selector: toggle**, and choose **Catppuccin Frappé
 Prism**. If it does not appear, restart Zed once and check that the downloaded
-file ends in `.json` inside the `themes` directory. Running the download command
-again updates the theme; it overwrites only that theme file.
+file ends in `.json` inside the `themes` directory. To update, use the download
+command from the newer release's README. It replaces only that theme file.
 
-Prefer a checkout? [Download the ZIP](https://github.com/Excoriate/catppuccin-frappe-prism-zed/archive/refs/heads/main.zip)
+Prefer a checkout? [Download the v0.2.0 ZIP](https://github.com/Excoriate/catppuccin-frappe-prism-zed/archive/refs/tags/v0.2.0.zip)
 and extract it, or, with Git installed, run:
 
 ```sh
-git clone https://github.com/Excoriate/catppuccin-frappe-prism-zed.git
+git clone --branch v0.2.0 https://github.com/Excoriate/catppuccin-frappe-prism-zed.git
 ```
 
 Run **zed: install dev extension** in Zed's command palette and select the extracted
@@ -100,7 +101,7 @@ language server identifies them.
 | Strings / numbers / booleans | Green / orchid / bold rose |
 | Configuration keys / sections / array tables | Blue / bold coral / bold italic gold |
 | Comments | Muted blue-gray, italic |
-| Selection / symbol occurrences | Bright green / a deeper matching green |
+| Selection / symbol occurrences | Bright green / pale lavender |
 
 The theme supplies 138 syntax styles. A style is used only when a language
 provider emits its matching capture or a semantic rule maps to it. The included
@@ -110,6 +111,23 @@ emits every role.
 
 Configuration-key and section distinctions require matching captures. Stock YAML
 and TOML providers may expose fewer distinctions; custom queries are not bundled.
+
+## Retro terminal
+
+Prism's integrated terminal palette uses deep navy (`#080c14`) with phosphor green
+text (`#39ff88`). Normal, bright and dim ANSI colors add blue, cyan, magenta, red
+and gold accents, with lighter black entries for the dark background.
+
+**Known limit in Zed 1.24.2:** the terminal shares the editor's green selection
+background and retains its foreground colors. Selecting bright terminal text can
+reduce contrast, particularly green text on the green selection. Prism keeps its
+strong green editor selection; we have not identified an independent terminal
+selection foreground theme control for this Zed version.
+
+The palette takes inspiration from
+[Neon Blue Split Contrast](https://ghostty-style.vercel.app/config/neon-blue-split-contrast)
+and adapts its colors to Zed. Select Prism and open Zed's terminal; no extra
+terminal extension or shell profile is required.
 
 ## Optional: richer semantic colors and occurrences
 
@@ -121,7 +139,8 @@ object. Do not replace your whole settings file. The example contains only:
 - Theme selection and combined parser/semantic highlighting.
 - Semantic mappings for declarations, calls, parameters, fields, types and constants,
   plus semantic-token support enabled in Go’s gopls.
-- Zed's highlight contrast setting of `75`, for readable text on green selections.
+- Zed's highlight contrast setting of `75`, for text on green selections and
+  lavender occurrences.
 - `selection_highlight: false`, which disables textual lookalikes while retaining
   language-server symbol occurrences.
 
@@ -132,11 +151,11 @@ Zed uses the first matching rule: keep specific rules before broad rules, and
 resolve overlapping rules deliberately instead of duplicating catchalls.
 
 With a supporting language server, place the caret in a variable or select its
-whole name: reads and writes of that symbol in the current document share a
-green background. The active selection is a lighter green. Shadowed variables,
-comments and strings are not textual matches. Native Go and Rust controls were
-checked for this behavior. Language-server support is required; this is not a
-project-wide reference search. Use **Find All References** for that workflow.
+whole name. Reads and writes of that symbol in the current document share a
+pale lavender background (`#babbf1`). The active selection stays green (`#9ad99e`).
+Shadowed variables, comments and strings are not textual matches. Language-server
+support is required; this is not a project-wide reference search. Use **Find All
+References** for that workflow.
 
 The theme and optional settings do not create missing semantic information.
 For example, a server may report a constructor call as an ordinary type, or may
