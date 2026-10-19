@@ -118,6 +118,12 @@ Prism's integrated terminal palette uses deep navy (`#080c14`) with phosphor gre
 text (`#39ff88`). Normal, bright and dim ANSI colors add blue, cyan, magenta, red
 and gold accents, with lighter black entries for the dark background.
 
+**Known limit in Zed 1.24.2:** the terminal shares the editor's green selection
+background and retains its foreground colors. Selecting bright terminal text can
+reduce contrast, particularly green text on the green selection. Prism keeps its
+strong green editor selection; we have not identified an independent terminal
+selection foreground theme control for this Zed version.
+
 The palette takes inspiration from
 [Neon Blue Split Contrast](https://ghostty-style.vercel.app/config/neon-blue-split-contrast)
 and adapts its colors to Zed. Select Prism and open Zed's terminal; no extra

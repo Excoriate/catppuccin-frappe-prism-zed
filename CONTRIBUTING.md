@@ -24,6 +24,13 @@ The checker intentionally protects reading behavior rather than a frozen palette
 4. Inspect the affected code at your normal font size, including the active line, selection, and read/write occurrence highlights.
 5. In Zed's terminal, run `sh examples/terminal-preview.sh`. Compare plain text, normal, bright and dim ANSI colors, and text on black backgrounds. Check inverse and selected text, too.
 
+**Known upstream failure in Zed 1.24.2:** the terminal shares the editor's green
+selection background and retains its foreground colors. Selecting bright text
+can reduce contrast. Record the terminal-selection contrast check as this known
+failure, not `PASS`; passing ANSI swatches do not establish selected-text contrast.
+Keep the strong green editor selection and include the Zed version and a screenshot
+when retesting.
+
 For visual changes, include before and after screenshots of the same code, font, Zed version, and settings. Use a short example without secrets. Check at least one ordinary language as well as the language motivating the change, so a stronger distinction does not hide another role.
 
 A theme assigns styles to scopes that Zed or a language provider emits. Some of the enhanced examples described in the README depend on optional providers or semantic-token settings. State which profile you used. A color entry or passing palette check does not prove a language emits that capture, and it does not prove selected-text rendering. Do not describe a provider-dependent role as part of a fresh, theme-only installation.

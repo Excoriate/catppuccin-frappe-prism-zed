@@ -13,6 +13,14 @@
   and are adapted for Zed's terminal.
 - Pin the installation commands and source download to v0.2.0.
 
+### Known limit
+
+- In Zed 1.24.2, terminal selection shares the editor's green background and keeps
+  terminal foreground colors. Selecting bright text can reduce contrast,
+  particularly green text on green. Prism retains the strong green editor
+  selection; no independent terminal selection foreground theme control has been
+  identified for this Zed version.
+
 ### Unchanged
 
 - The primary selection remains green (`#9ad99e`). Editor syntax colors, font
